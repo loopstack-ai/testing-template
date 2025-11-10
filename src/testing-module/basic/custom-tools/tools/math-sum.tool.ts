@@ -1,7 +1,6 @@
 import { BlockConfig, TemplateExpression, HandlerCallResult } from '@loopstack/shared';
 import { z } from 'zod';
 import { Tool } from '@loopstack/core';
-import { Injectable } from '@nestjs/common';
 import { MathService } from '../services/math.service';
 
 const propertiesSchema = z.object({
@@ -19,7 +18,6 @@ const configSchema = z.object({
   b: NumberOrTemplateExpression,
 });
 
-@Injectable()
 @BlockConfig({
   config: {
     description: 'Math tool accepting arguments and using another injected service.',
