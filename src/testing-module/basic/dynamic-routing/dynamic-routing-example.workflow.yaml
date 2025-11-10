@@ -32,11 +32,6 @@ transitions:
       - placeC
       - placeD
     call:
-      - tool: CreateChatMessage
-        args:
-          role: 'assistant'
-          content: 'Value is greater than 100'
-
       # Option 2: use SwitchTarget tool with custom workflow getter function to determine target place
       - tool: SwitchTarget
         args:
@@ -67,4 +62,4 @@ transitions:
       - tool: CreateChatMessage
         args:
           role: 'assistant'
-          content: 'Value is less or equal 200'
+          content: 'Value is less or equal 200, but greater than 100'
