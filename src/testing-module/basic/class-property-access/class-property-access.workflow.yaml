@@ -1,0 +1,24 @@
+title: "Test 7: Class Property Access"
+
+description: |
+  This workflow tests access to class properties and methods with different exposition settings.
+  It demonstrates how to access exposed and non-exposed properties, as well as properties from
+  workflow and tool contexts.
+
+transitions:
+  - id: calculate
+    from: start
+    to: end
+    call:
+      # Access class properties and methods with different exposition settings
+      - tool: CreateChatMessage
+        args:
+          role: 'assistant'
+          content: |
+            Accessible class properties (through template expressions): 
+            
+            Exposed Property: {{ accessibleProperty }}
+            Not Exposed Property: {{ notAccessibleProperty }}
+            Workflow Context Property: {{ workflowContextProperty }}
+            Tool Context Property: {{ toolContextProperty }}            
+            Exposed Getter Method: {{ exposedGetter }}

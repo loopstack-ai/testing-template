@@ -1,3 +1,9 @@
+title: 'Test 4: Dynamic Routing'
+
+description: |
+  This workflow demonstrates dynamic routing based on the value of a variable.
+  It uses the SwitchTarget tool to determine the next transition based on conditions.
+
 transitions:
   - id: create_mock_data
     from: start

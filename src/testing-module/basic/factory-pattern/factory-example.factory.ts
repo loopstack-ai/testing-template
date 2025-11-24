@@ -5,9 +5,6 @@ import { Expose } from 'class-transformer';
 
 @BlockConfig({
   imports: [ProcessItemWorkflow],
-  config: {
-    title: "Example 2: Pipeline Factory"
-  },
   configFile: __dirname + '/factory-example.factory.yaml',
 })
 export class FactoryExampleFactory extends Factory {

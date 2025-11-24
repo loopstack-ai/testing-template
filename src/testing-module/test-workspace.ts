@@ -8,6 +8,7 @@ import {
   ConditionalPipelineExampleSequence
 } from './basic/conditional-pipeline/conditional-pipeline-example.sequence';
 import { CustomNamespacesSequence } from './basic/custom-namespaces/custom-namespaces.sequence';
+import { ClassPropertyAccessWorkflow } from './basic/class-property-access/class-property-access.workflow';
 
 @BlockConfig({
   imports: [
@@ -17,6 +18,7 @@ import { CustomNamespacesSequence } from './basic/custom-namespaces/custom-names
     DynamicRoutingExampleWorkflow,
     ConditionalPipelineExampleSequence,
     CustomNamespacesSequence,
+    ClassPropertyAccessWorkflow,
   ],
   config: {
     title: 'Testing Workspace'

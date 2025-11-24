@@ -12,9 +12,6 @@ import { Expose } from 'class-transformer';
     ConditionalPathAWorkflow,
     ConditionalPathBWorkflow,
   ],
-  config: {
-    title: "Example 5: Conditional Pipeline Sequence"
-  },
   properties: z.object({
     inputPath: z.string().default('B'), // set default to B, so we don't need to pass in real args for the test
   }),

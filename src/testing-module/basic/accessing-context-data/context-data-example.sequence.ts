@@ -10,9 +10,6 @@ import { AccessDataFromArgumentsWorkflow } from './workflows/access-data-from-ar
     AccessDataUsingCustomVariableWorkflow,
     AccessDataFromArgumentsWorkflow,
   ],
-  config: {
-    title: "Example 1: Pipeline Sequence",
-  },
   configFile: __dirname + '/context-data-example.sequence.yaml',
 })
 export class ContextDataExampleSequence extends Pipeline {}

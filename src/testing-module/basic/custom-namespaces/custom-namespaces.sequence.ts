@@ -8,9 +8,6 @@ import { FruitsSequence } from './fruits/fruits.sequence';
     VegetablesSequence,
     FruitsSequence,
   ],
-  config: {
-    title: "Example 6: Custom Namespaces"
-  },
   configFile: __dirname + '/custom-namespaces.sequence.yaml',
 })
 export class CustomNamespacesSequence extends Pipeline {}

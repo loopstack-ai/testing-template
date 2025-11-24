@@ -1,3 +1,10 @@
+title: "Test 5: Conditional Pipeline Sequence"
+
+description: |
+  This sequence demonstrates conditional execution of workflows based on input arguments.
+  It includes an initial workflow that always runs, followed by two conditional workflows
+  that execute based on the value of the inputPath argument.
+
 sequence:
   - id: initial
     block: AlwaysExecutedWorkflow

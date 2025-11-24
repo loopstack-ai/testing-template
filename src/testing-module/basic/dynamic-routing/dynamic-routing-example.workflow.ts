@@ -4,9 +4,6 @@ import { Expose } from 'class-transformer';
 
 @BlockConfig({
   imports: [SwitchTarget, CreateMock, CreateChatMessage],
-  config: {
-    title: 'Example 4: Dynamic Routing',
-  },
   configFile: __dirname + '/dynamic-routing-example.workflow.yaml',
 })
 export class DynamicRoutingExampleWorkflow extends Workflow  {

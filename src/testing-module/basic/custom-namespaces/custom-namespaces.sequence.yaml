@@ -1,3 +1,9 @@
+title: "Test 6: Custom Namespaces"
+
+description: |
+  This sequence demonstrates the use of custom namespaces within a pipeline.
+  It includes workflows that utilize different namespaces to organize and access related functionalities.
+
 sequence:
   - block: HelloFromNamespaceMessageWorkflow
   - block: FruitsSequence

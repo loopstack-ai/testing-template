@@ -33,6 +33,7 @@ import {
 import { CustomNamespacesSequence } from './basic/custom-namespaces/custom-namespaces.sequence';
 import { VegetablesSequence } from './basic/custom-namespaces/vegetables/vegetables.sequence';
 import { FruitsSequence } from './basic/custom-namespaces/fruits/fruits.sequence';
+import { ClassPropertyAccessWorkflow } from './basic/class-property-access/class-property-access.workflow';
 
 @Module({
   imports: [
@@ -67,6 +68,8 @@ import { FruitsSequence } from './basic/custom-namespaces/fruits/fruits.sequence
     HelloFromNamespaceMessageWorkflow,
     VegetablesSequence,
     FruitsSequence,
+
+    ClassPropertyAccessWorkflow,
 
     TestModuleFactory,
   ],

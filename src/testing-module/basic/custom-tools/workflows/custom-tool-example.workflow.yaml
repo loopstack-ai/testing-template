@@ -1,3 +1,18 @@
+title: "Test 3: Custom Tool"
+
+description: |
+  This workflow demonstrates the usage of custom tools, including both stateless and stateful tools.
+  It performs a simple addition operation using a custom MathSumTool and showcases the behavior of
+  stateless and stateful counter tools.
+
+ui:
+  form:
+    properties:
+      a:
+        title: 'First number (a)'
+      b:
+        title: 'Second number (b)'
+
 transitions:
   - id: calculate
     from: start
@@ -25,19 +40,6 @@ transitions:
           content: |
             Alternatively, using workflow getter function:
             {{ args.a }} + {{ args.b }} = {{ calculate }}
-
-      # Access class properties and methods with different exposition settings
-      - tool: CreateChatMessage
-        args:
-          role: 'assistant'
-          content: |
-            Accessible class properties (through template expressions): 
-            
-            Exposed Property: {{ accessibleProperty }}
-            Not Exposed Property: {{ notAccessibleProperty }}
-            Workflow Context Property: {{ workflowContextProperty }}
-            Tool Context Property: {{ toolContextProperty }}            
-            Exposed Getter Method: {{ exposedGetter }}            
 
       # Use a stateless tool
       - id: count1
