@@ -1,4 +1,4 @@
-import { BlockConfig, HandlerCallResult } from '@loopstack/shared';
+import { BlockConfig, HandlerCallResult } from '@loopstack/common';
 import { Tool } from '@loopstack/core';
 import { Expose } from 'class-transformer';
 

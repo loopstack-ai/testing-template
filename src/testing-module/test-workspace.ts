@@ -1,4 +1,4 @@
-import { BlockConfig } from '@loopstack/shared';
+import { BlockConfig } from '@loopstack/common';
 import { Workspace } from '@loopstack/core';
 import { FactoryExampleFactory } from './basic/factory-pattern/factory-example.factory';
 import { CustomToolExampleWorkflow } from './basic/custom-tools/workflows/custom-tool-example.workflow';

@@ -1,4 +1,4 @@
-import { BlockConfig } from '@loopstack/shared';
+import { BlockConfig } from '@loopstack/common';
 import { Pipeline } from '@loopstack/core';
 import { VegetablesSequence } from './vegetables/vegetables.sequence';
 import { FruitsSequence } from './fruits/fruits.sequence';

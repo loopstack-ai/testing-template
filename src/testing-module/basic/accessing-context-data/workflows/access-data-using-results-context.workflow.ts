@@ -1,5 +1,5 @@
 import { CreateChatMessage, CreateMock, Workflow } from '@loopstack/core';
-import { BlockConfig } from '@loopstack/shared';
+import { BlockConfig } from '@loopstack/common';
 import { Expose } from 'class-transformer';
 
 @BlockConfig({

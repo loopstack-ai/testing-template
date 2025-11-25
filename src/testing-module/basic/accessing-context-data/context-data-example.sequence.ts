@@ -1,4 +1,4 @@
-import { BlockConfig } from '@loopstack/shared';
+import { BlockConfig } from '@loopstack/common';
 import { AccessDataUsingResultsContextWorkflow } from './workflows/access-data-using-results-context.workflow';
 import { Pipeline } from '@loopstack/core';
 import { AccessDataUsingCustomVariableWorkflow } from './workflows/access-data-using-custom-variable.workflow';

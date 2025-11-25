@@ -1,4 +1,4 @@
-import { BlockConfig } from '@loopstack/shared';
+import { BlockConfig } from '@loopstack/common';
 import { Factory } from '@loopstack/core';
 import { ProcessItemWorkflow } from './workflows/process-item.workflow';
 import { Expose } from 'class-transformer';

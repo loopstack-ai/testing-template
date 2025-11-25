@@ -1,4 +1,5 @@
-import { BlockConfig, TemplateExpression, HandlerCallResult } from '@loopstack/shared';
+import { BlockConfig, HandlerCallResult } from '@loopstack/common';
+import { TemplateExpression } from '@loopstack/contracts/schemas';
 import { z } from 'zod';
 import { Tool } from '@loopstack/core';
 import { MathService } from '../services/math.service';

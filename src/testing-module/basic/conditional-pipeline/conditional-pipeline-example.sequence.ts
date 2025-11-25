@@ -1,4 +1,4 @@
-import { BlockConfig } from '@loopstack/shared';
+import { BlockConfig } from '@loopstack/common';
 import { Pipeline } from '@loopstack/core';
 import { ConditionalPathAWorkflow } from './workflows/conditional-path-a.workflow';
 import { z } from 'zod';

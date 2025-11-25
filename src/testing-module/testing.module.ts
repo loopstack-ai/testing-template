@@ -22,7 +22,7 @@ import { ConditionalPathAWorkflow } from './basic/conditional-pipeline/workflows
 import { ConditionalPathBWorkflow } from './basic/conditional-pipeline/workflows/conditional-path-b.workflow';
 import { AlwaysExecutedWorkflow } from './basic/conditional-pipeline/workflows/always-executed.workflow';
 import { MathService } from './basic/custom-tools/services/math.service';
-import { ModuleFactory } from '@loopstack/shared';
+import { ModuleFactory } from '@loopstack/common';
 import { StatelessCounterTool } from './basic/custom-tools/tools/stateless-counter.tool';
 import { StatefulCounterTool } from './basic/custom-tools/tools/stateful-counter.tool';
 import { TestModuleFactory } from './test-module-factory.service';
