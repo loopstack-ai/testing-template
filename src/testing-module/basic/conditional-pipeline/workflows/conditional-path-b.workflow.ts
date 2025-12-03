@@ -9,7 +9,7 @@ import { Expose } from 'class-transformer';
   },
   configFile: __dirname + '/simple-message.workflow.yaml',
 })
-export class ConditionalPathBWorkflow extends Workflow  {
+export class ConditionalPathBWorkflow extends Workflow {
   @Expose()
   get message() {
     return 'This is a path B message';

@@ -5,41 +5,27 @@ import { ProcessItemWorkflow } from './basic/factory-pattern/workflows/process-i
 import { MathSumTool } from './basic/custom-tools/tools/math-sum.tool';
 import { CustomToolExampleWorkflow } from './basic/custom-tools/workflows/custom-tool-example.workflow';
 import { ContextDataExampleSequence } from './basic/accessing-context-data/context-data-example.sequence';
-import {
-  AccessDataFromArgumentsWorkflow
-} from './basic/accessing-context-data/workflows/access-data-from-arguments.workflow';
-import {
-  AccessDataUsingCustomVariableWorkflow
-} from './basic/accessing-context-data/workflows/access-data-using-custom-variable.workflow';
-import {
-  AccessDataUsingResultsContextWorkflow
-} from './basic/accessing-context-data/workflows/access-data-using-results-context.workflow';
+import { AccessDataFromArgumentsWorkflow } from './basic/accessing-context-data/workflows/access-data-from-arguments.workflow';
+import { AccessDataUsingCustomVariableWorkflow } from './basic/accessing-context-data/workflows/access-data-using-custom-variable.workflow';
+import { AccessDataUsingResultsContextWorkflow } from './basic/accessing-context-data/workflows/access-data-using-results-context.workflow';
 import { DynamicRoutingExampleWorkflow } from './basic/dynamic-routing/dynamic-routing-example.workflow';
-import {
-  ConditionalPipelineExampleSequence
-} from './basic/conditional-pipeline/conditional-pipeline-example.sequence';
+import { ConditionalPipelineExampleSequence } from './basic/conditional-pipeline/conditional-pipeline-example.sequence';
 import { ConditionalPathAWorkflow } from './basic/conditional-pipeline/workflows/conditional-path-a.workflow';
 import { ConditionalPathBWorkflow } from './basic/conditional-pipeline/workflows/conditional-path-b.workflow';
 import { AlwaysExecutedWorkflow } from './basic/conditional-pipeline/workflows/always-executed.workflow';
 import { MathService } from './basic/custom-tools/services/math.service';
-import { ModuleFactory } from '@loopstack/common';
-import { StatelessCounterTool } from './basic/custom-tools/tools/stateless-counter.tool';
-import { StatefulCounterTool } from './basic/custom-tools/tools/stateful-counter.tool';
-import { TestModuleFactory } from './test-module-factory.service';
+import { TransientCounterTool } from './basic/custom-tools/tools/transient-counter.tool';
+import { SingletonCounterTool } from './basic/custom-tools/tools/singleton-counter.tool';
 import { TestWorkspace } from './test-workspace';
-import {
-  HelloFromNamespaceMessageWorkflow
-} from './basic/custom-namespaces/workflows/hello-from-namespace-message.workflow';
+import { HelloFromNamespaceMessageWorkflow } from './basic/custom-namespaces/workflows/hello-from-namespace-message.workflow';
 import { CustomNamespacesSequence } from './basic/custom-namespaces/custom-namespaces.sequence';
 import { VegetablesSequence } from './basic/custom-namespaces/vegetables/vegetables.sequence';
 import { FruitsSequence } from './basic/custom-namespaces/fruits/fruits.sequence';
 import { ClassPropertyAccessWorkflow } from './basic/class-property-access/class-property-access.workflow';
+import { TestingModuleCapabilityFactory } from './test-module-capability.factory';
 
 @Module({
-  imports: [
-    LoopCoreModule,
-    CoreToolsModule,
-  ],
+  imports: [LoopCoreModule, CoreToolsModule],
   providers: [
     TestWorkspace,
 
@@ -54,8 +40,8 @@ import { ClassPropertyAccessWorkflow } from './basic/class-property-access/class
     CustomToolExampleWorkflow,
     MathSumTool,
     MathService,
-    StatelessCounterTool,
-    StatefulCounterTool,
+    TransientCounterTool,
+    SingletonCounterTool,
 
     DynamicRoutingExampleWorkflow,
 
@@ -71,12 +57,8 @@ import { ClassPropertyAccessWorkflow } from './basic/class-property-access/class
 
     ClassPropertyAccessWorkflow,
 
-    TestModuleFactory,
+    TestingModuleCapabilityFactory,
   ],
-  exports: [
-    TestModuleFactory
-  ]
+  exports: [TestingModuleCapabilityFactory],
 })
-@ModuleFactory(TestModuleFactory)
 export class TestingModule {}
-

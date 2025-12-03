@@ -13,9 +13,9 @@ import { Expose } from 'class-transformer';
   }),
   configFile: __dirname + '/simple-message.workflow.yaml',
 })
-export class AlwaysExecutedWorkflow extends Workflow  {
+export class AlwaysExecutedWorkflow extends Workflow {
   @Expose()
   get message() {
-    return `The desired path is "${ this.args.inputPath }"`;
+    return `The desired path is "${this.args.inputPath}"`;
   }
 }

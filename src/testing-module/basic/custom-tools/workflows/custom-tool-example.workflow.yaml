@@ -43,16 +43,16 @@ transitions:
 
       # Use a stateless tool
       - id: count1
-        tool: StatelessCounterTool
+        tool: TransientCounterTool
       - id: count2
-        tool: StatelessCounterTool
+        tool: TransientCounterTool
       - id: count3
-        tool: StatelessCounterTool
+        tool: TransientCounterTool
       - tool: CreateChatMessage
         args:
           role: 'assistant'
           content: |
-            Stateless counter tool (call 1-3) should not count:
+            Transient counter tool (call 1-3) should not count:
 
             > {{ state.currentTransitionResults.count1.data }}
             > {{ state.currentTransitionResults.count2.data }}
@@ -60,16 +60,16 @@ transitions:
 
       # Use a stateful tool
       - id: count4
-        tool: StatefulCounterTool
+        tool: SingletonCounterTool
       - id: count5
-        tool: StatefulCounterTool
+        tool: SingletonCounterTool
       - id: count6
-        tool: StatefulCounterTool
+        tool: SingletonCounterTool
       - tool: CreateChatMessage
         args:
           role: 'assistant'
           content: |
-            Stateful counter tool (call 4-6) should count: 
+            Singleton counter tool (call 4-6) should count: 
 
             > {{ state.currentTransitionResults.count4.data }}
             > {{ state.currentTransitionResults.count5.data }}

@@ -6,8 +6,7 @@ import { Exclude, Expose } from 'class-transformer';
   imports: [CreateChatMessage],
   configFile: __dirname + '/class-property-access.workflow.yaml',
 })
-export class ClassPropertyAccessWorkflow extends Workflow  {
-
+export class ClassPropertyAccessWorkflow extends Workflow {
   // default: property is accessible
   @Expose()
   accessibleProperty = true;
@@ -21,7 +20,7 @@ export class ClassPropertyAccessWorkflow extends Workflow  {
   workflowContextProperty = true;
 
   // property accessible in tool and workflow context
-  @Expose({ groups: ['tool' , 'workflow'] })
+  @Expose({ groups: ['tool', 'workflow'] })
   toolContextProperty = true;
 
   // accessible getter methods

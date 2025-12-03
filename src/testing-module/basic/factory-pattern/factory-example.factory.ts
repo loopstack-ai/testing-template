@@ -10,10 +10,6 @@ import { Expose } from 'class-transformer';
 export class FactoryExampleFactory extends Factory {
   @Expose()
   get fruits() {
-    return [
-      'Apples',
-      'Oranges',
-      'Bananas'
-    ]
+    return ['Apples', 'Oranges', 'Bananas'];
   }
 }

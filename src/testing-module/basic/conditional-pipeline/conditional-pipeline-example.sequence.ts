@@ -18,10 +18,8 @@ import { Expose } from 'class-transformer';
   configFile: __dirname + '/conditional-pipeline-example.sequence.yaml',
 })
 export class ConditionalPipelineExampleSequence extends Pipeline {
-
   @Expose()
   get isPathB() {
     return this.args.inputPath === 'B';
   }
-
 }

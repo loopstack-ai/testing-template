@@ -1,16 +1,12 @@
-import { CreateChatMessage, CreateMock, Workflow } from '@loopstack/core';
+import { CreateChatMessage, CreateValue, Workflow } from '@loopstack/core';
 import { BlockConfig, Input } from '@loopstack/common';
 import { Expose } from 'class-transformer';
 
 @BlockConfig({
-  imports: [CreateMock, CreateChatMessage],
-  config: {
-    title: 'Access Data Using Custom Variables',
-  },
+  imports: [CreateValue, CreateChatMessage],
   configFile: __dirname + '/access-data-using-custom-variable.workflow.yaml',
 })
-export class AccessDataUsingCustomVariableWorkflow extends Workflow  {
-
+export class AccessDataUsingCustomVariableWorkflow extends Workflow {
   // Custom property to read and write data
   // Make accessible using Input and Output decorator
   @Input()

@@ -9,16 +9,10 @@ transitions:
     from: start
     to: prepared
     call:
-      - tool: CreateMock
-        args:
-          output:
-            myValue: 150
-        assign:
-          myValue: ${ result.data.myValue }
       - tool: CreateChatMessage
         args:
           role: 'assistant'
-          content: "Analysing value = {{ myValue }}"
+          content: "Analysing value = {{ args.value }}"
 
   - id: router
     from: prepared
@@ -30,7 +24,7 @@ transitions:
       # Option 1: use SwitchTarget tool with Handelbars template expression to determine target place
       - tool: SwitchTarget
         args:
-          target: "{{#if (gt myValue 100)}}placeA{{else}}placeB{{/if}}"
+          target: "{{#if (gt args.value 100)}}placeA{{else}}placeB{{/if}}"
 
   - id: value_gt_100
     from: placeA

@@ -4,11 +4,11 @@ import { Expose } from 'class-transformer';
 
 @BlockConfig({
   config: {
-    description: 'Counter tool with transient scope.',
+    description:
+      'Counter tool with transient scope which will not actually count, since they don not maintain state. This is for demonstrations how transient tools work.',
   },
 })
-export class StatelessCounterTool extends Tool {
-
+export class TransientCounterTool extends Tool {
   @Expose()
   count: number = 0;
 

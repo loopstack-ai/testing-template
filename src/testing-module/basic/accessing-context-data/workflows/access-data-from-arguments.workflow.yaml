@@ -1,3 +1,5 @@
+title: Access Data Via Arguments
+
 transitions:
   - id: access_data
     from: start
@@ -8,5 +10,4 @@ transitions:
       - tool: CreateChatMessage
         args:
           role: 'assistant'
-          content: |
-            Data from arguments: {{ args.message }}
+          content: "Data from arguments: {{ args.message }}"

@@ -15,8 +15,7 @@ import { Expose } from 'class-transformer';
   }),
   configFile: __dirname + '/process-item.workflow.yaml',
 })
-export class ProcessItemWorkflow extends Workflow  {
-
+export class ProcessItemWorkflow extends Workflow {
   // property to store random string
   randomString: string;
 
@@ -40,5 +39,4 @@ export class ProcessItemWorkflow extends Workflow  {
   get index() {
     return this.args.index + 1;
   }
-
 }

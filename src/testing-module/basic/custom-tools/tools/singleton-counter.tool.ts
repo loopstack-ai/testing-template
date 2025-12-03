@@ -8,11 +8,10 @@ import { Expose } from 'class-transformer';
     description: 'Counter tool as singleton.',
   },
   scope: Scope.DEFAULT, // default singleton scope.
-                        // BE CAREFUL: data becomes accessible cross-automation runs and potentially leak information.
-                        // that's why all Blocks in Loopstack are transient by default.
+  // BE CAREFUL: data becomes accessible cross-automation runs and potentially leak information.
+  // that's why all Blocks in Loopstack are transient by default.
 })
-export class StatefulCounterTool extends Tool {
-
+export class SingletonCounterTool extends Tool {
   @Expose()
   count: number = 0;
 

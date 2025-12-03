@@ -9,9 +9,9 @@ import { Expose } from 'class-transformer';
   },
   configFile: __dirname + '/simple-message.workflow.yaml',
 })
-export class HelloFromNamespaceMessageWorkflow extends Workflow  {
+export class HelloFromNamespaceMessageWorkflow extends Workflow {
   @Expose()
   get message() {
-    return `Hello from namespace ${ this.ctx.namespace.name }`;
+    return `Hello from namespace ${this.ctx.namespace.name}`;
   }
 }

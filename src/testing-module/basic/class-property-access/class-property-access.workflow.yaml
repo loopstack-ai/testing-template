@@ -20,5 +20,5 @@ transitions:
             Exposed Property: {{ accessibleProperty }}
             Not Exposed Property: {{ notAccessibleProperty }}
             Workflow Context Property: {{ workflowContextProperty }}
-            Tool Context Property: {{ toolContextProperty }}            
+            Tool Context Property: {{ toolContextProperty }}
             Exposed Getter Method: {{ exposedGetter }}

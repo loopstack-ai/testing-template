@@ -1,18 +1,12 @@
-import { CreateChatMessage, CreateMock, Workflow } from '@loopstack/core';
+import { CreateChatMessage, Workflow } from '@loopstack/core';
 import { BlockConfig } from '@loopstack/common';
 import { z } from 'zod';
 
 @BlockConfig({
-  imports: [CreateMock, CreateChatMessage],
-  config: {
-    title: 'Access Data Via Arguments',
-  },
-
-  // define arguments
+  imports: [CreateChatMessage],
   properties: z.object({
     message: z.string(),
   }),
-
   configFile: __dirname + '/access-data-from-arguments.workflow.yaml',
 })
-export class AccessDataFromArgumentsWorkflow extends Workflow  {}
+export class AccessDataFromArgumentsWorkflow extends Workflow {}
