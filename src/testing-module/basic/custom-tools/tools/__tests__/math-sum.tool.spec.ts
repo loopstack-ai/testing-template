@@ -1,46 +1,28 @@
 import { MathService } from '../../services/math.service';
-import { Module } from '@nestjs/common';
-import { TestingModule as NestJsTestingModule } from '@nestjs/testing';
-import { TestingModuleCapabilityFactory } from '../../../../test-module-capability.factory';
 import { MathSumTool } from '../math-sum.tool';
 import {
-  BlockFactory,
-  createToolTestingModule,
+  createToolTestingContext,
   describeSchemaTests,
   Tool,
 } from '@loopstack/core';
-
-const mockMathService = {
-  sum: jest.fn(),
-};
-
-@Module({
-  providers: [
-    TestingModuleCapabilityFactory,
-    MathSumTool,
-    {
-      provide: MathService,
-      useValue: mockMathService,
-    },
-  ],
-  exports: [TestingModuleCapabilityFactory],
-})
-export class TestingModule {}
+import { TestingModule } from '@nestjs/testing';
 
 describe('Tool: MathSumTool', () => {
-  let module: NestJsTestingModule;
-  let blockFactory: BlockFactory;
+  let module: TestingModule;
+  let createToolInstance: (args: any, ctx?: any) => Promise<MathSumTool>;
+  let mockMathService: jest.Mocked<Pick<MathService, 'sum'>>;
 
   beforeAll(async () => {
-    module = await createToolTestingModule(TestingModule);
-    await module.init();
-    blockFactory = module.get(BlockFactory);
+    mockMathService = { sum: jest.fn() };
+    const ctx = await createToolTestingContext(MathSumTool, [
+      { provide: MathService, mock: mockMathService },
+    ]);
+    module = ctx.module;
+    createToolInstance = ctx.createTool;
   });
 
   afterAll(async () => {
-    if (module) {
-      await module.close();
-    }
+    await module?.close();
   });
 
   beforeEach(() => {
@@ -48,13 +30,10 @@ describe('Tool: MathSumTool', () => {
   });
 
   describe('Block Metadata', () => {
-    let tool: Tool;
+    let tool: MathSumTool;
 
     beforeAll(async () => {
-      tool = await blockFactory.createBlock<MathSumTool, any>('MathSumTool', {
-        a: 1,
-        b: 2,
-      }, {});
+      tool = await createToolInstance({ a: 5, b: 10 });
     });
 
     it('tool should be defined', async () => {
@@ -78,10 +57,7 @@ describe('Tool: MathSumTool', () => {
     let tool: Tool;
 
     beforeAll(async () => {
-      tool = await blockFactory.createBlock<MathSumTool, any>('MathSumTool', {
-        a: 1,
-        b: 2,
-      }, {});
+      tool = await createToolInstance({ a: 5, b: 10 });
     });
 
     describeSchemaTests(() => tool.metadata.properties!, [
@@ -142,10 +118,7 @@ describe('Tool: MathSumTool', () => {
     let tool: Tool;
 
     beforeAll(async () => {
-      tool = await blockFactory.createBlock<MathSumTool, any>('MathSumTool', {
-        a: 1,
-        b: 2,
-      }, {});
+      tool = await createToolInstance({ a: 5, b: 10 });
     });
 
     describeSchemaTests(() => tool.metadata.configSchema!, [
@@ -196,10 +169,7 @@ describe('Tool: MathSumTool', () => {
     let tool: Tool;
 
     beforeAll(async () => {
-      tool = await blockFactory.createBlock<MathSumTool, any>('MathSumTool', {
-        a: 5,
-        b: 10,
-      }, {});
+      tool = await createToolInstance({ a: 5, b: 10 });
     });
 
     it('should have correct arguments', async () => {
@@ -211,11 +181,7 @@ describe('Tool: MathSumTool', () => {
     it('should call MathService.sum with correct arguments', async () => {
       mockMathService.sum.mockReturnValue(15);
 
-      const tool = await blockFactory.createBlock<MathSumTool, any>('MathSumTool', {
-        a: 5,
-        b: 10,
-      }, {});
-
+      const tool = await createToolInstance({ a: 5, b: 10 });
       await tool.execute();
 
       expect(mockMathService.sum).toHaveBeenCalledTimes(1);
@@ -225,11 +191,7 @@ describe('Tool: MathSumTool', () => {
     it('should return the sum from MathService', async () => {
       mockMathService.sum.mockReturnValue(15);
 
-      const tool = await blockFactory.createBlock<MathSumTool, any>('MathSumTool', {
-        a: 5,
-        b: 10,
-      }, {});
-
+      const tool = await createToolInstance({ a: 5, b: 10 });
       const result = await tool.execute();
 
       expect(result.data).toBe(15);
@@ -246,11 +208,7 @@ describe('Tool: MathSumTool', () => {
       const customResult = 999;
       mockMathService.sum.mockReturnValue(customResult);
 
-      const tool = await blockFactory.createBlock<MathSumTool, any>('MathSumTool', {
-        a: 1,
-        b: 1,
-      }, {});
-
+      const tool = await createToolInstance({ a: 1, b: 1 });
       const result = await tool.execute();
 
       expect(result.data).toBe(customResult);
