@@ -1,72 +1,215 @@
+import { TestingModule } from '@nestjs/testing';
+import { CustomToolExampleWorkflow } from '../custom-tool-example.workflow';
 import {
+  BlockExecutionContextDto,
+  CoreFeaturesModule,
+  CoreToolsModule,
   CreateChatMessage,
-  getToolResult,
-  WorkflowTestBuilder,
+  createWorkflowTest,
+  LoopCoreModule,
+  ToolMock,
+  WorkflowProcessorService,
 } from '@loopstack/core';
 import { MathSumTool } from '../../tools/math-sum.tool';
-import { createTestingModule } from '../../../../../../test/create-testing-module';
-import { TransientCounterTool } from '../../tools/transient-counter.tool';
-import { SingletonCounterTool } from '../../tools/singleton-counter.tool';
-import { CustomToolExampleWorkflow } from '../custom-tool-example.workflow';
+import { CounterTool } from '../../tools/counter.tool';
+import { z } from 'zod';
 
 describe('CustomToolExampleWorkflow', () => {
-  it('should execute workflow and produce correct results', async () => {
-    const builder = new WorkflowTestBuilder(createTestingModule, CustomToolExampleWorkflow)
-      .withArgs({ a: 1, b: 4 })
-      .withToolMock(MathSumTool, [{ data: 99 }])
-      .withToolMock(TransientCounterTool, [{ data: 1 }])
-      .withToolMock(SingletonCounterTool, [
-        { data: 1 },
-        { data: 2 },
-        { data: 3 },
-      ])
-      .withToolMock(CreateChatMessage);
+  let module: TestingModule;
+  let workflow: CustomToolExampleWorkflow;
+  let processor: WorkflowProcessorService;
 
-    await builder.runWorkflow((workflow, test) => {
-      // Should execute without errors
+  let mockMathSumTool: ToolMock;
+  let mockCounterTool: ToolMock;
+  let mockCreateChatMessageTool: ToolMock;
+
+  beforeEach(async () => {
+    module = await createWorkflowTest()
+      .forWorkflow(CustomToolExampleWorkflow)
+      .withImports(LoopCoreModule, CoreFeaturesModule)
+      .withToolMock(MathSumTool)
+      .withToolMock(CounterTool)
+      .withToolOverride(CreateChatMessage) // override tools from imported modules
+      .compile();
+
+    workflow = module.get(CustomToolExampleWorkflow);
+    processor = module.get(WorkflowProcessorService);
+
+    mockMathSumTool = module.get(MathSumTool);
+    mockCounterTool = module.get(CounterTool);
+    mockCreateChatMessageTool = module.get(CreateChatMessage);
+  });
+
+  afterEach(async () => {
+    await module.close();
+  });
+
+  describe('initialization', () => {
+    it('should be defined', () => {
       expect(workflow).toBeDefined();
-      expect(workflow.state.place).toBe('end');
-      expect(workflow.state.stop).toBe(false);
-      expect(workflow.state.error).toBe(false);
-
-      // Should execute with args
-      expect(workflow.args).toMatchObject({ a: 1, b: 4 });
-
-      // Getter method calculate should calculate correctly
-      expect(workflow.calculate).toBe(5);
-
-      // Should call MathSumTool and store results
-      expect(test.getToolSpy(MathSumTool)).toHaveBeenCalledTimes(1);
-      expect(getToolResult(workflow, 'calculate', 'calculation')).toMatchObject({
-        data: 99,
-      });
-
-      // Should call StatelessCounterTool and store results
-      expect(test.getToolSpy(TransientCounterTool)).toHaveBeenCalledTimes(3);
-      expect(getToolResult(workflow, 'calculate', 'count3')).toMatchObject({
-        data: 1,
-      });
-
-      // Should call StatefulCounterTool and store results
-      expect(test.getToolSpy(SingletonCounterTool)).toHaveBeenCalledTimes(3);
-      expect(getToolResult(workflow, 'calculate', 'count6')).toMatchObject({
-        data: 3,
-      });
-
-      // Should call CreateChatMessage tool four times with correct data
-      expect(test.getToolSpy(CreateChatMessage)).toHaveBeenCalledTimes(4);
-      expect(test.getToolSpy(CreateChatMessage).mock.calls).toEqual([
-        [expect.objectContaining({ content: expect.stringContaining('1 + 4 = 99') }), expect.anything(),
-          expect.anything()],
-        [expect.objectContaining({ content: expect.stringContaining('1 + 4 = 5') }), expect.anything(),
-          expect.anything()],
-        [expect.objectContaining({ content: expect.stringContaining('> 1\n> 1\n> 1') }), expect.anything(),
-          expect.anything()],
-        [expect.objectContaining({ content: expect.stringContaining('> 1\n> 2\n> 3') }), expect.anything(),
-          expect.anything()],
-      ]);
     });
 
-    await builder.teardown();
+    it('should have argsSchema defined', () => {
+      expect(workflow.argsSchema).toBeDefined();
+      expect(workflow.argsSchema).toBeInstanceOf(z.ZodType);
+    });
+
+    it('should have stateSchema defined', () => {
+      expect(workflow.stateSchema).toBeDefined();
+      expect(workflow.stateSchema).toBeInstanceOf(z.ZodType);
+    });
+
+    it('should have config defined', () => {
+      expect(workflow.config).toBeDefined();
+    });
+
+    it('should have all tools available via workflow.tools', () => {
+      expect(workflow.tools).toBeDefined();
+      expect(Array.isArray(workflow.tools)).toBe(true);
+      expect(workflow.tools).toContain('counterTool');
+      expect(workflow.tools).toContain('createChatMessage');
+      expect(workflow.tools).toContain('mathTool');
+      expect(workflow.tools).toHaveLength(3);
+    });
+  });
+
+  describe('arguments', () => {
+    it('should validate arguments with correct schema', () => {
+      const validArgs = { a: 10, b: 20 };
+      const result = workflow.validate(validArgs);
+      expect(result).toEqual(validArgs);
+    });
+
+    it('should apply default values when arguments are missing', () => {
+      const result = workflow.validate({});
+      expect(result).toEqual({ a: 1, b: 2 });
+    });
+
+    it('should apply partial default values', () => {
+      const result = workflow.validate({ a: 5 });
+      expect(result).toEqual({ a: 5, b: 2 });
+    });
+
+    it('should throw error for invalid argument types', () => {
+      expect(() => workflow.validate({ a: 'not a number', b: 20 })).toThrow();
+    });
+  });
+
+  describe('states', () => {
+    it('should have stateSchema with expected properties', () => {
+      const schema = workflow.stateSchema as z.ZodObject<any>;
+      expect(schema).toBeDefined();
+
+      const shape = schema.shape;
+      expect(shape.total).toBeDefined();
+      expect(shape.count1).toBeDefined();
+      expect(shape.count2).toBeDefined();
+      expect(shape.count3).toBeDefined();
+    });
+
+    it('should validate state with all optional fields', () => {
+      const schema = workflow.stateSchema!;
+      const result = schema.parse({});
+      expect(result).toEqual({});
+    });
+
+    it('should validate state with populated fields', () => {
+      const schema = workflow.stateSchema!;
+      const state = { total: 100, count1: 1, count2: 2, count3: 3 };
+      const result = schema.parse(state);
+      expect(result).toEqual(state);
+    });
+
+    it('should throw error for invalid state field types', () => {
+      const schema = workflow.stateSchema!;
+      expect(() => schema.parse({ total: 'not a number' })).toThrow();
+    });
+  });
+
+  describe('helpers', () => {
+    it('should have helpers defined', () => {
+      expect(workflow.helpers).toBeDefined();
+      expect(Array.isArray(workflow.helpers)).toBe(true);
+    });
+
+    it('should have sum helper registered', () => {
+      expect(workflow.helpers).toContain('sum');
+    });
+
+    it('should get sum helper via getHelper', () => {
+      const sumHelper = workflow.getHelper('sum');
+      expect(sumHelper).toBeDefined();
+      expect(typeof sumHelper).toBe('function');
+    });
+
+    it('should return undefined for non-existent helper', () => {
+      const nonExistent = workflow.getHelper('nonExistentHelper');
+      expect(nonExistent).toBeUndefined();
+    });
+
+    it('should execute sum helper correctly', () => {
+      const sumHelper = workflow.getHelper('sum')!;
+      expect(sumHelper).toBeDefined();
+      const result = sumHelper.call(workflow, 5, 3);
+      expect(result).toBe(8);
+    });
+  });
+
+  describe('workflow execution', () => {
+    it('should execute calculate transition with custom arguments', async () => {
+      const context = new BlockExecutionContextDto({});
+
+      // Configure mocks for this test
+      mockMathSumTool.execute.mockResolvedValue({ data: 30 });
+      mockCounterTool.execute
+        .mockResolvedValueOnce({ data: 1 })
+        .mockResolvedValueOnce({ data: 2 })
+        .mockResolvedValueOnce({ data: 3 });
+
+      // Execute
+      const result = await processor.process(workflow, { a: 10, b: 20 }, context);
+
+      expect(result).toBeDefined();
+
+      // Runtime
+      expect(result.runtime.error).toBe(false);
+      expect(result.runtime.stop).toBe(false);
+
+      // Final state
+      expect(result.state.get('total')).toBe(30);
+      expect(result.state.get('count3')).toBe(3);
+
+      // Tool calls
+      expect(mockMathSumTool.execute).toHaveBeenCalledWith({ a: 10, b: 20 }, expect.anything(), expect.anything());
+      expect(mockCounterTool.execute).toHaveBeenCalledTimes(3);
+      expect(mockCreateChatMessageTool.execute).toHaveBeenCalledTimes(3);
+
+      // Transition history
+      const history = result.state.caretaker.getHistory();
+      expect(history[0].step).toBe('init');
+      expect(history[1].step).toBe('calculate');
+      expect(history[1].metadata.place).toBe('end');
+    });
+  });
+});
+
+describe('CustomToolExampleWorkflow with existing entity', () => {
+  it('should resume from existing workflow', async () => {
+    const module = await createWorkflowTest()
+      .forWorkflow(CustomToolExampleWorkflow)
+      .withImports(LoopCoreModule, CoreToolsModule, CoreFeaturesModule)
+      .withToolMock(MathSumTool)
+      .withToolMock(CounterTool)
+      .withToolOverride(CreateChatMessage)
+      .withExistingWorkflow({
+        place: 'calculate',
+        inputData: { a: 5, b: 10 },
+      })
+      .compile();
+
+    const workflow = module.get(CustomToolExampleWorkflow);
+    expect(workflow).toBeDefined();
+
+    await module.close();
   });
 });

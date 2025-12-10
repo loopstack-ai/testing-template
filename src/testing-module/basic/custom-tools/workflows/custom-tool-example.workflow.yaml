@@ -1,4 +1,4 @@
-title: "Test 3: Custom Tool"
+title: "Custom Tool"
 
 description: |
   This workflow demonstrates the usage of custom tools, including both stateless and stateful tools.
@@ -20,57 +20,62 @@ transitions:
     call:
       # Use a custom tool
       - id: calculation
-        tool: MathSumTool
+        tool: mathTool
         args:
           a: ${ args.a }
           b: ${ args.b }
+        assign:
+          total: ${ result.data }
 
       # Display the result
-      - tool: CreateChatMessage
+      - tool: createChatMessage
         args:
           role: 'assistant'
           content: |
             Tool calculation result:
-            {{ args.a }} + {{ args.b }} = {{ state.currentTransitionResults.calculation.data }}
+            {{ args.a }} + {{ args.b }} = {{ total }}
 
       # Alternatively, use a custom workflow getter function
-      - tool: CreateChatMessage
+      - tool: createChatMessage
         args:
           role: 'assistant'
           content: |
             Alternatively, using workflow getter function:
-            {{ args.a }} + {{ args.b }} = {{ calculate }}
+            {{ args.a }} + {{ args.b }} = {{ sum args.a args.b }}
 
       # Use a stateless tool
       - id: count1
-        tool: TransientCounterTool
+        tool: counterTool
+        assign:
+          count1: ${ result.data }
       - id: count2
-        tool: TransientCounterTool
+        tool: counterTool
+        assign:
+          count2: ${ result.data }
       - id: count3
-        tool: TransientCounterTool
-      - tool: CreateChatMessage
+        tool: counterTool
+        assign:
+          count3: ${ result.data }
+      - tool: createChatMessage
         args:
           role: 'assistant'
           content: |
-            Transient counter tool (call 1-3) should not count:
+            Counter tool should count:
 
-            > {{ state.currentTransitionResults.count1.data }}
-            > {{ state.currentTransitionResults.count2.data }}
-            > {{ state.currentTransitionResults.count3.data }}
+            {{ metadata.tools.calculate.count1.data }}, {{ count2 }}, {{ count3 }}
 
-      # Use a stateful tool
-      - id: count4
-        tool: SingletonCounterTool
-      - id: count5
-        tool: SingletonCounterTool
-      - id: count6
-        tool: SingletonCounterTool
-      - tool: CreateChatMessage
-        args:
-          role: 'assistant'
-          content: |
-            Singleton counter tool (call 4-6) should count: 
 
-            > {{ state.currentTransitionResults.count4.data }}
-            > {{ state.currentTransitionResults.count5.data }}
-            > {{ state.currentTransitionResults.count6.data }}
+#      # Use a stateful tool
+#      - id: count4
+#        tool: nonFunctionalCounterTool
+#      - id: count5
+#        tool: nonFunctionalCounterTool
+#      - id: count6
+#        tool: nonFunctionalCounterTool
+#      - tool: createChatMessage
+#        args:
+#          role: 'assistant'
+#          content: |
+#            Counter tool created with factory pattern should not count:
+#
+#            {{ state.currentTransitionResults.count4.data }}, {{ state.currentTransitionResults.count5.data }}, {{ state.currentTransitionResults.count6.data }}

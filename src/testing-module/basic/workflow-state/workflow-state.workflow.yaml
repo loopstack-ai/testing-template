@@ -1,4 +1,4 @@
-title: Access Data Using Custom Variables
+title: Workflow State
 
 transitions:
   - id: create_some_data
@@ -8,20 +8,20 @@ transitions:
 
       # Create test data and assign the result to the property "message"
       - id: say_hello
-        tool: CreateValue
+        tool: createValue
         args:
           input: 'Hello Again.'
         assign:
           message: ${ result.data }
 
       # Access the data using the custom property
-      - tool: CreateChatMessage
+      - tool: createChatMessage
         args:
           role: 'assistant'
-          content: "Data from block property: {{ message }}"
+          content: "Data from state: {{ message }}"
 
       # Access the data using a helper method of the workflow
-      - tool: CreateChatMessage
+      - tool: createChatMessage
         args:
           role: 'assistant'
-          content: "Data from custom workflow helper method: {{ messageInUpperCase }}"
+          content: "Use workflow helper method: {{ messageInUpperCase message }}"

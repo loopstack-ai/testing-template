@@ -1,41 +1,31 @@
-import { BlockConfig, HandlerCallResult } from '@loopstack/common';
-import { TemplateExpression } from '@loopstack/contracts/schemas';
+import { BlockConfig, ToolResult, WithArguments } from '@loopstack/common';
 import { z } from 'zod';
-import { Tool } from '@loopstack/core';
+import { ToolBase } from '@loopstack/core';
 import { MathService } from '../services/math.service';
+import { Inject, Injectable } from '@nestjs/common';
 
 const propertiesSchema = z.object({
   a: z.number(),
   b: z.number(),
 }).strict();
 
-const NumberOrTemplateExpression = z.union([
-  TemplateExpression, // allow template expression instead of actual value
-  z.number(), // allow actual value
-]);
+export type MathSumArgs = z.infer<typeof propertiesSchema>;
 
-const configSchema = z.object({
-  a: NumberOrTemplateExpression,
-  b: NumberOrTemplateExpression,
-}).strict();
-
+@Injectable()
 @BlockConfig({
   config: {
     description:
-      'Math tool accepting arguments and using another injected service.',
+      'Math tool calculating the sum of two arguments by using an injected service.',
   },
-  properties: propertiesSchema,
-  configSchema: configSchema,
 })
-export class MathSumTool extends Tool {
-  constructor(private mathService: MathService) {
-    // inject service using constructor
-    super(); // must contain super call
-  }
+@WithArguments(propertiesSchema)
+export class MathSumTool extends ToolBase<MathSumArgs> {
 
-  async execute(): Promise<HandlerCallResult> {
-    const sum = this.mathService.sum(this.args.a, this.args.b);
+  @Inject()
+  private mathService: MathService;
 
+  async execute(args: MathSumArgs): Promise<ToolResult<number>> {
+    const sum = this.mathService.sum(args.a, args.b);
     return {
       data: sum,
     };

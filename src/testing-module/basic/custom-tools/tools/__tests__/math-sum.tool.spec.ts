@@ -1,217 +1,122 @@
-import { MathService } from '../../services/math.service';
-import { MathSumTool } from '../math-sum.tool';
-import {
-  createToolTestingContext,
-  describeSchemaTests,
-  Tool,
-} from '@loopstack/core';
 import { TestingModule } from '@nestjs/testing';
+import { createToolTest, ToolMock } from '@loopstack/core';
+import { MathSumTool } from '../math-sum.tool';
+import { MathService } from '../../services/math.service';
 
-describe('Tool: MathSumTool', () => {
+describe('MathSumTool', () => {
   let module: TestingModule;
-  let createToolInstance: (args: any, ctx?: any) => Promise<MathSumTool>;
-  let mockMathService: jest.Mocked<Pick<MathService, 'sum'>>;
+  let tool: MathSumTool;
 
-  beforeAll(async () => {
-    mockMathService = { sum: jest.fn() };
-    const ctx = await createToolTestingContext(MathSumTool, [
-      { provide: MathService, mock: mockMathService },
-    ]);
-    module = ctx.module;
-    createToolInstance = ctx.createTool;
-  });
+  describe('with real MathService', () => {
+    beforeEach(async () => {
+      module = await createToolTest()
+        .forTool(MathSumTool)
+        .withProvider(MathService)
+        .compile();
 
-  afterAll(async () => {
-    await module?.close();
-  });
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  describe('Block Metadata', () => {
-    let tool: MathSumTool;
-
-    beforeAll(async () => {
-      tool = await createToolInstance({ a: 5, b: 10 });
+      tool = module.get(MathSumTool);
     });
 
-    it('tool should be defined', async () => {
-      expect(tool).toBeInstanceOf(MathSumTool);
+    afterEach(async () => {
+      await module.close();
     });
 
-    it('should have metadata attached', () => {
-      expect(tool.metadata).toBeDefined();
+    it('should be defined', () => {
+      expect(tool).toBeDefined();
     });
 
-    it('should have properties schema', () => {
-      expect(tool.metadata.properties).toBeDefined();
+    it('should have argsSchema defined', () => {
+      expect(tool.argsSchema).toBeDefined();
     });
 
-    it('should have config schema', () => {
-      expect(tool.metadata.configSchema).toBeDefined();
-    });
-  });
-
-  describe('Properties Schema', () => {
-    let tool: Tool;
-
-    beforeAll(async () => {
-      tool = await createToolInstance({ a: 5, b: 10 });
+    it('should calculate sum of two positive numbers', async () => {
+      const args = tool.validate({ a: 2, b: 3 });
+      const result = await tool.execute(args);
+      expect(result.data).toBe(5);
     });
 
-    describeSchemaTests(() => tool.metadata.properties!, [
-      {
-        description: 'should not allow additional properties',
-        args: { a: 5, b: 10, test: 1 },
-        shouldPass: false,
-      },
-      {
-        description: 'should accept valid number inputs',
-        args: { a: 5, b: 10 },
-        shouldPass: true,
-      },
-      {
-        description: 'should accept zero values',
-        args: { a: 0, b: 0 },
-        shouldPass: true,
-      },
-      {
-        description: 'should accept negative numbers',
-        args: { a: -5, b: -10 },
-        shouldPass: true,
-      },
-      {
-        description: 'should accept decimal numbers',
-        args: { a: 1.5, b: 2.5 },
-        shouldPass: true,
-      },
-      {
-        description: 'should reject string for a',
-        args: { a: 'not a number', b: 2 },
-        shouldPass: false,
-      },
-      {
-        description: 'should reject string for b',
-        args: { a: 1, b: 'not a number' },
-        shouldPass: false,
-      },
-      {
-        description: 'should reject missing a',
-        args: { b: 2 },
-        shouldPass: false,
-      },
-      {
-        description: 'should reject missing b',
-        args: { a: 1 },
-        shouldPass: false,
-      },
-      {
-        description: 'should reject no arguments',
-        args: undefined,
-        shouldPass: false,
-      },
-    ]);
-  });
-
-  describe('Config Schema', () => {
-    let tool: Tool;
-
-    beforeAll(async () => {
-      tool = await createToolInstance({ a: 5, b: 10 });
+    it('should handle negative numbers', async () => {
+      const args = tool.validate({ a: -5, b: 3 });
+      const result = await tool.execute(args);
+      expect(result.data).toBe(-2);
     });
 
-    describeSchemaTests(() => tool.metadata.configSchema!, [
-      {
-        description: 'should not allow additional properties',
-        args: { a: 5, b: 10, test: 1 },
-        shouldPass: false,
-      },
-      {
-        description: 'should reject no arguments',
-        args: undefined,
-        shouldPass: false,
-      },
-      {
-        description: 'should reject missing a',
-        args: { b: 2 },
-        shouldPass: false,
-      },
-      {
-        description: 'should reject missing b',
-        args: { a: 1 },
-        shouldPass: false,
-      },
-      {
-        description: 'should accept number values',
-        args: { a: 5, b: 10 },
-        shouldPass: true,
-      },
-      {
-        description: 'should accept template expressions for a',
-        args: { a: '${ someValue }', b: 10 },
-        shouldPass: true,
-      },
-      {
-        description: 'should accept template expressions for b',
-        args: { a: 5, b: '${ someValue }' },
-        shouldPass: true,
-      },
-      {
-        description: 'should accept template expressions for both',
-        args: { a: '${ valueA }', b: '${ valueB }' },
-        shouldPass: true,
-      },
-    ]);
-  });
-
-  describe('Arguments', () => {
-    let tool: Tool;
-
-    beforeAll(async () => {
-      tool = await createToolInstance({ a: 5, b: 10 });
-    });
-
-    it('should have correct arguments', async () => {
-      expect(tool.args).toEqual({ a: 5, b: 10 });
+    it('should handle zero', async () => {
+      const args = tool.validate({ a: 0, b: 0 });
+      const result = await tool.execute(args);
+      expect(result.data).toBe(0);
     });
   });
 
-  describe('Result', () => {
-    it('should call MathService.sum with correct arguments', async () => {
-      mockMathService.sum.mockReturnValue(15);
+  describe('with mocked MathService', () => {
+    const mockMathService = {
+      sum: jest.fn(),
+    };
 
-      const tool = await createToolInstance({ a: 5, b: 10 });
-      await tool.execute();
+    beforeEach(async () => {
+      jest.clearAllMocks();
 
-      expect(mockMathService.sum).toHaveBeenCalledTimes(1);
-      expect(mockMathService.sum).toHaveBeenCalledWith(5, 10);
+      module = await createToolTest()
+        .forTool(MathSumTool)
+        .withMock(MathService, mockMathService)
+        .compile();
+
+      tool = module.get(MathSumTool);
     });
 
-    it('should return the sum from MathService', async () => {
-      mockMathService.sum.mockReturnValue(15);
+    afterEach(async () => {
+      await module.close();
+    });
 
-      const tool = await createToolInstance({ a: 5, b: 10 });
-      const result = await tool.execute();
+    it('should call mathService.sum with correct arguments', async () => {
+      mockMathService.sum.mockReturnValue(42);
 
-      expect(result.data).toBe(15);
+      const args = tool.validate({ a: 10, b: 32 });
+      const result = await tool.execute(args);
+
+      expect(mockMathService.sum).toHaveBeenCalledWith(10, 32);
+      expect(result.data).toBe(42);
+    });
+
+    it('should handle service returning negative values', async () => {
+      mockMathService.sum.mockReturnValue(-100);
+
+      const args = tool.validate({ a: 1, b: 1 });
+      const result = await tool.execute(args);
+
+      expect(result.data).toBe(-100);
     });
   });
 
-  describe('Dependency Injection', () => {
-    it('should have MathService injected', async () => {
-      const mathService = module.get(MathService);
-      expect(mathService).toBe(mockMathService);
+  describe('validation', () => {
+    beforeEach(async () => {
+      module = await createToolTest()
+        .forTool(MathSumTool)
+        .withProvider(MathService)
+        .compile();
+
+      tool = module.get(MathSumTool);
     });
 
-    it('should use injected MathService for calculations', async () => {
-      const customResult = 999;
-      mockMathService.sum.mockReturnValue(customResult);
+    afterEach(async () => {
+      await module.close();
+    });
 
-      const tool = await createToolInstance({ a: 1, b: 1 });
-      const result = await tool.execute();
+    it('should validate correct input', () => {
+      const validated = tool.validate({ a: 1, b: 2 });
+      expect(validated).toEqual({ a: 1, b: 2 });
+    });
 
-      expect(result.data).toBe(customResult);
+    it('should reject non-numeric values', () => {
+      expect(() => tool.validate({ a: 'one', b: 2 })).toThrow();
+    });
+
+    it('should reject extra properties (strict mode)', () => {
+      expect(() => tool.validate({ a: 1, b: 2, c: 3 })).toThrow();
+    });
+
+    it('should reject missing required properties', () => {
+      expect(() => tool.validate({ a: 1 })).toThrow();
     });
   });
 });
