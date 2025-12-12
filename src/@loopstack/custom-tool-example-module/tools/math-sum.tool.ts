@@ -4,10 +4,12 @@ import { ToolBase } from '@loopstack/core';
 import { MathService } from '../services/math.service';
 import { Inject, Injectable } from '@nestjs/common';
 
-const propertiesSchema = z.object({
-  a: z.number(),
-  b: z.number(),
-}).strict();
+const propertiesSchema = z
+  .object({
+    a: z.number(),
+    b: z.number(),
+  })
+  .strict();
 
 export type MathSumArgs = z.infer<typeof propertiesSchema>;
 
@@ -20,7 +22,6 @@ export type MathSumArgs = z.infer<typeof propertiesSchema>;
 })
 @WithArguments(propertiesSchema)
 export class MathSumTool extends ToolBase<MathSumArgs> {
-
   @Inject()
   private mathService: MathService;
 

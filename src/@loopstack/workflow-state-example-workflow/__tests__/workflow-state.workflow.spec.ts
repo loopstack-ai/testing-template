@@ -1,14 +1,14 @@
 import { TestingModule } from '@nestjs/testing';
 import {
-  BlockExecutionContextDto, CoreFeaturesModule,
-  CreateChatMessage,
-  CreateValue,
+  BlockExecutionContextDto,
   createWorkflowTest,
   LoopCoreModule,
   ToolMock,
   WorkflowProcessorService,
 } from '@loopstack/core';
 import { WorkflowStateWorkflow } from '../workflow-state.workflow';
+import { CoreUiModule, CreateChatMessage } from '@loopstack/core-ui-module';
+import { CreateValue } from '@loopstack/create-value-tool';
 
 describe('WorkflowStateWorkflow', () => {
   let module: TestingModule;
@@ -21,8 +21,8 @@ describe('WorkflowStateWorkflow', () => {
   beforeEach(async () => {
     module = await createWorkflowTest()
       .forWorkflow(WorkflowStateWorkflow)
-      .withImports(LoopCoreModule, CoreFeaturesModule)
-      .withToolOverride(CreateValue)
+      .withImports(LoopCoreModule, CoreUiModule)
+      .withToolMock(CreateValue)
       .withToolOverride(CreateChatMessage)
       .compile();
 
@@ -72,7 +72,10 @@ describe('WorkflowStateWorkflow', () => {
       expect.anything(),
     );
     expect(mockCreateChatMessage.execute).toHaveBeenCalledWith(
-      { role: 'assistant', content: 'Use workflow helper method: HELLO AGAIN.' },
+      {
+        role: 'assistant',
+        content: 'Use workflow helper method: HELLO AGAIN.',
+      },
       expect.anything(),
       expect.anything(),
     );

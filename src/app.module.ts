@@ -5,6 +5,7 @@ import { LoopstackApiModule } from '@loopstack/api';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { loopstackConfig } from './loopstack.config';
 import { TestingModule } from './testing-module/testing.module';
+import { CliModule } from '@loopstack/cli';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { TestingModule } from './testing-module/testing.module';
       }),
     }),
     LoopCoreModule,
+    CliModule,
     LoopstackApiModule,
     TestingModule,
   ],

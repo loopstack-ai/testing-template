@@ -2,17 +2,14 @@ import { TestingModule } from '@nestjs/testing';
 import { CustomToolExampleWorkflow } from '../custom-tool-example.workflow';
 import {
   BlockExecutionContextDto,
-  CoreFeaturesModule,
-  CoreToolsModule,
-  CreateChatMessage,
   createWorkflowTest,
   LoopCoreModule,
   ToolMock,
   WorkflowProcessorService,
 } from '@loopstack/core';
-import { MathSumTool } from '../../tools/math-sum.tool';
-import { CounterTool } from '../../tools/counter.tool';
+import { MathSumTool, CounterTool } from '../../tools';
 import { z } from 'zod';
+import { CoreUiModule, CreateChatMessage } from '@loopstack/core-ui-module';
 
 describe('CustomToolExampleWorkflow', () => {
   let module: TestingModule;
@@ -26,7 +23,7 @@ describe('CustomToolExampleWorkflow', () => {
   beforeEach(async () => {
     module = await createWorkflowTest()
       .forWorkflow(CustomToolExampleWorkflow)
-      .withImports(LoopCoreModule, CoreFeaturesModule)
+      .withImports(LoopCoreModule, CoreUiModule)
       .withToolMock(MathSumTool)
       .withToolMock(CounterTool)
       .withToolOverride(CreateChatMessage) // override tools from imported modules
@@ -167,7 +164,11 @@ describe('CustomToolExampleWorkflow', () => {
         .mockResolvedValueOnce({ data: 3 });
 
       // Execute
-      const result = await processor.process(workflow, { a: 10, b: 20 }, context);
+      const result = await processor.process(
+        workflow,
+        { a: 10, b: 20 },
+        context,
+      );
 
       expect(result).toBeDefined();
 
@@ -180,7 +181,11 @@ describe('CustomToolExampleWorkflow', () => {
       expect(result.state.get('count3')).toBe(3);
 
       // Tool calls
-      expect(mockMathSumTool.execute).toHaveBeenCalledWith({ a: 10, b: 20 }, expect.anything(), expect.anything());
+      expect(mockMathSumTool.execute).toHaveBeenCalledWith(
+        { a: 10, b: 20 },
+        expect.anything(),
+        expect.anything(),
+      );
       expect(mockCounterTool.execute).toHaveBeenCalledTimes(3);
       expect(mockCreateChatMessageTool.execute).toHaveBeenCalledTimes(3);
 
@@ -197,7 +202,7 @@ describe('CustomToolExampleWorkflow with existing entity', () => {
   it('should resume from existing workflow', async () => {
     const module = await createWorkflowTest()
       .forWorkflow(CustomToolExampleWorkflow)
-      .withImports(LoopCoreModule, CoreToolsModule, CoreFeaturesModule)
+      .withImports(LoopCoreModule, CoreUiModule)
       .withToolMock(MathSumTool)
       .withToolMock(CounterTool)
       .withToolOverride(CreateChatMessage)

@@ -1,28 +1,25 @@
 import { Module } from '@nestjs/common';
-import { CoreFeaturesModule, LoopCoreModule } from '@loopstack/core';
-import { MathSumTool } from './basic/custom-tools/tools/math-sum.tool';
-import { CustomToolExampleWorkflow } from './basic/custom-tools/workflows/custom-tool-example.workflow';
-import { DynamicRoutingExampleWorkflow } from './basic/dynamic-routing/dynamic-routing-example.workflow';
-import { MathService } from './basic/custom-tools/services/math.service';
+import { LoopCoreModule } from '@loopstack/core';
 import { TestWorkspace } from './test-workspace';
-import { WorkflowArgumentsWorkflow } from './basic/workflow-arguments/workflow-arguments.workflow';
-import { WorkflowStateWorkflow } from './basic/workflow-state/workflow-state.workflow';
-import { WorkflowToolResultsWorkflow } from './basic/workflow-tool-results/workflow-tool-results.workflow';
-import { CounterTool } from './basic/custom-tools/tools/counter.tool';
+import { CoreUiModule } from '@loopstack/core-ui-module';
+// import { CoreToolsModule } from '@loopstack/core-tools-module';
+// import { DynamicRoutingExampleWorkflow } from '../@loopstack/dynamic-routing-example-workflow';
+// import { WorkflowStateWorkflow } from '../@loopstack/workflow-state-example-workflow/workflow-state.workflow';
+// import { CustomToolModule } from '../@loopstack/custom-tool-example-module/custom-tool.module';
+// import {
+//   WorkflowToolResultsWorkflow
+// } from '../@loopstack/accessing-tool-results-example-workflow/workflow-tool-results.workflow';
+
 
 @Module({
-  imports: [LoopCoreModule, CoreFeaturesModule],
+  imports: [LoopCoreModule, CoreUiModule,
+    // CustomToolModule
+  ],
   providers: [
     TestWorkspace,
-    CustomToolExampleWorkflow,
-    WorkflowArgumentsWorkflow,
-    WorkflowStateWorkflow,
-    DynamicRoutingExampleWorkflow,
-    WorkflowToolResultsWorkflow,
-
-    MathSumTool,
-    CounterTool,
-    MathService,
+    // WorkflowStateWorkflow,
+    // DynamicRoutingExampleWorkflow,
+    // WorkflowToolResultsWorkflow,
   ],
 })
 export class TestingModule {}

@@ -1,35 +1,31 @@
 import { TestingModule } from '@nestjs/testing';
 import { DynamicRoutingExampleWorkflow } from '../dynamic-routing-example.workflow';
 import {
-  BlockExecutionContextDto, CoreFeaturesModule,
-  CreateChatMessage,
+  BlockExecutionContextDto,
   createWorkflowTest,
   LoopCoreModule,
-  SwitchTarget,
   ToolMock,
   WorkflowProcessorService,
 } from '@loopstack/core';
+import { CoreUiModule, CreateChatMessage } from '@loopstack/core-ui-module';
 
 describe('DynamicRoutingExampleWorkflow', () => {
   let module: TestingModule;
   let workflow: DynamicRoutingExampleWorkflow;
   let processor: WorkflowProcessorService;
 
-  let mockSwitchTarget: ToolMock;
   let mockCreateChatMessage: ToolMock;
 
   beforeEach(async () => {
     module = await createWorkflowTest()
       .forWorkflow(DynamicRoutingExampleWorkflow)
-      .withImports(LoopCoreModule, CoreFeaturesModule)
-      .withToolOverride(SwitchTarget)
+      .withImports(LoopCoreModule, CoreUiModule)
       .withToolOverride(CreateChatMessage)
       .compile();
 
     workflow = module.get(DynamicRoutingExampleWorkflow);
     processor = module.get(WorkflowProcessorService);
 
-    mockSwitchTarget = module.get(SwitchTarget);
     mockCreateChatMessage = module.get(CreateChatMessage);
   });
 
@@ -40,10 +36,8 @@ describe('DynamicRoutingExampleWorkflow', () => {
   describe('initialization', () => {
     it('should be defined with correct tools and helpers', () => {
       expect(workflow).toBeDefined();
-      expect(workflow.tools).toContain('switchTarget');
       expect(workflow.tools).toContain('createChatMessage');
       expect(workflow.helpers).toContain('gt');
-      expect(workflow.helpers).toContain('selectRoute');
     });
 
     it('should apply default argument value', () => {
@@ -58,39 +52,28 @@ describe('DynamicRoutingExampleWorkflow', () => {
       expect(gt.call(workflow, 101, 100)).toBe(true);
       expect(gt.call(workflow, 100, 100)).toBe(false);
     });
-
-    it('selectRoute should return correct place', () => {
-      const selectRoute = workflow.getHelper('selectRoute')!;
-      expect(selectRoute.call(workflow, 201)).toBe('placeC');
-      expect(selectRoute.call(workflow, 200)).toBe('placeD');
-    });
   });
 
   describe('routing', () => {
     const context = new BlockExecutionContextDto({});
 
-
     it('should route to placeB when value <= 100', async () => {
-      mockSwitchTarget.execute
-        .mockResolvedValueOnce({
-          effects: {
-            setTransitionPlace: 'placeB',
-          },
-        })
-        .mockResolvedValueOnce({
-          effects: {
-            setTransitionPlace: 'placeD',
-          },
-        });
+      mockCreateChatMessage.execute.mockResolvedValue({});
 
       const result = await processor.process(workflow, { value: 50 }, context);
 
       expect(result.runtime.error).toBe(false);
 
-      // Verify switchTarget called with correct target
-      expect(mockSwitchTarget.execute).toHaveBeenCalledWith(
-        { target: 'placeB' },
-        expect.anything(), expect.anything()
+      // Verify createChatMessage calls
+      expect(mockCreateChatMessage.execute).toHaveBeenCalledWith(
+        { role: 'assistant', content: 'Analysing value = 50' },
+        expect.anything(),
+        expect.anything(),
+      );
+      expect(mockCreateChatMessage.execute).toHaveBeenCalledWith(
+        { role: 'assistant', content: 'Value is less or equal 100' },
+        expect.anything(),
+        expect.anything(),
       );
 
       // Verify history contains expected places
@@ -103,32 +86,22 @@ describe('DynamicRoutingExampleWorkflow', () => {
     });
 
     it('should route to placeC when value > 200', async () => {
-      mockSwitchTarget.execute
-        .mockResolvedValueOnce({
-          effects: {
-            setTransitionPlace: 'placeA',
-          },
-        })
-        .mockResolvedValueOnce({
-          effects: {
-            setTransitionPlace: 'placeC',
-          },
-        });
+      mockCreateChatMessage.execute.mockResolvedValue({});
 
       const result = await processor.process(workflow, { value: 250 }, context);
 
       expect(result.runtime.error).toBe(false);
 
-      // Verify switchTarget calls with correct targets
-      expect(mockSwitchTarget.execute).toHaveBeenNthCalledWith(
-        1,
-        { target: 'placeA' },
-        expect.anything(), expect.anything()
+      // Verify createChatMessage calls
+      expect(mockCreateChatMessage.execute).toHaveBeenCalledWith(
+        { role: 'assistant', content: 'Analysing value = 250' },
+        expect.anything(),
+        expect.anything(),
       );
-      expect(mockSwitchTarget.execute).toHaveBeenNthCalledWith(
-        2,
-        { target: 'placeC' },
-        expect.anything(), expect.anything()
+      expect(mockCreateChatMessage.execute).toHaveBeenCalledWith(
+        { role: 'assistant', content: 'Value is greater than 200' },
+        expect.anything(),
+        expect.anything(),
       );
 
       // Verify history contains expected places
@@ -143,32 +116,25 @@ describe('DynamicRoutingExampleWorkflow', () => {
     });
 
     it('should route to placeD when 100 < value <= 200', async () => {
-      mockSwitchTarget.execute
-        .mockResolvedValueOnce({
-          effects: {
-            setTransitionPlace: 'placeA',
-          },
-        })
-        .mockResolvedValueOnce({
-          effects: {
-            setTransitionPlace: 'placeD',
-          },
-        });
+      mockCreateChatMessage.execute.mockResolvedValue({});
 
       const result = await processor.process(workflow, { value: 150 }, context);
 
       expect(result.runtime.error).toBe(false);
 
-      // Verify switchTarget calls with correct targets
-      expect(mockSwitchTarget.execute).toHaveBeenNthCalledWith(
-        1,
-        { target: 'placeA' },
-        expect.anything(), expect.anything()
+      // Verify createChatMessage calls
+      expect(mockCreateChatMessage.execute).toHaveBeenCalledWith(
+        { role: 'assistant', content: 'Analysing value = 150' },
+        expect.anything(),
+        expect.anything(),
       );
-      expect(mockSwitchTarget.execute).toHaveBeenNthCalledWith(
-        2,
-        { target: 'placeD' },
-        expect.anything(), expect.anything()
+      expect(mockCreateChatMessage.execute).toHaveBeenCalledWith(
+        {
+          role: 'assistant',
+          content: 'Value is less or equal 200, but greater than 100',
+        },
+        expect.anything(),
+        expect.anything(),
       );
 
       // Verify history contains expected places
