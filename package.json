@@ -1,6 +1,6 @@
 {
   "name": "@loopstack/testing-template",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "private": true,
   "scripts": {
     "build": "nest build",
@@ -20,12 +20,12 @@
     "loopstack:dev": "tsx src/cli.ts"
   },
   "dependencies": {
-    "@loopstack/api": "^0.16.0",
+    "@loopstack/api": "^0.17.0",
     "@loopstack/cli": "^0.15.0",
-    "@loopstack/common": "^0.16.0",
+    "@loopstack/common": "^0.17.0",
     "@loopstack/contracts": "^0.16.0",
-    "@loopstack/core": "^0.16.0",
-    "@loopstack/cli-module": "^0.16.0",
+    "@loopstack/core": "^0.17.0",
+    "@loopstack/cli-module": "^0.16.1",
     "@nestjs/common": "^11.1.9",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
